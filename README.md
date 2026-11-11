@@ -4,11 +4,18 @@ Tanisha's copy of the method in Anne Deslattes Mays' repository (NIH-NLM/endotyp
 
 ## Start here
 
-**What changed in this folder compared with what you gave me**
+**Status (2026-11-11).** Notebooks 02 to 08 have been written. 02 to 07 have been run on Lifebit; 08 ran and its results are summarised below. 09 (WGCNA) is written and has not been run yet.
 
-- **New: `ipynb/04b_NIH_JDM_batch_correction_all_sources.ipynb`.** Puts the four facilities and the JDM lab on one scale, says which sources can and cannot be corrected, and checks that the correction did not erase the interferon signal.
-- **Edited: `ipynb/07_NIH_bulk_RNA_seq_JDM_comparison.ipynb`.** Its old section 4 (the pooled ComBat view) moved into 04b. Nothing else in 07 changed.
-- **Everything else is byte-for-byte what you uploaded** (01 to 06, 001 to 006, `paths.R`, the six gene lists, the environment files). So 02, 03, 04, 05 and 06 do not need to be re-run if they already ran.
+**What is different from Anne's repository and from the files first uploaded:**
+
+- **New: `04b_NIH_JDM_batch_correction_all_sources`.** Puts the four facilities and the JDM lab on one scale, says which sources can and cannot be corrected, and checks that the correction did not erase the interferon signal.
+- **New: `09_WGCNA_RGM_and_JDM_modules`.** Gene modules per study, preservation between RGM and the JDM lab, and a module-overlap table.
+- **New: `08_SLE_GSE65391_vs_JDM_and_interferonopathies`.** SLE (public array GSE65391) against its own healthy children, compared with every disease and JDM.
+- **Edited: `07`.** The pooled ComBat view moved into 04b. The JDM key sheet is no longer needed (the `Cohort` row of `4b_rpkm.csv` says JDM or healthy). Added section 1b (comparison without the 28 interferon genes). The heatmap draws one colour strip (this R's `heatmap()` takes only one).
+- **Edited: `06`.** Same one-colour-strip heatmap fix.
+- **Edited: `03`.** The Checkpoint 10 histogram no longer crashes (all TPM column sums are exactly 1,000,000).
+- **Edited: `04b`.** Reads JDM or healthy from `4b_rpkm.csv` itself; no key sheet.
+- Everything else is as uploaded (`01`, `02`, `04`, `05`, `001` to `006`, `paths.R`, the six gene lists, the environment files).
 
 ## Setup: the terminal commands, in order
 
@@ -83,6 +90,8 @@ Every file each notebook writes, and what it is for, is listed in **`OUTPUTS.md`
 | 5 | `05_…differential_expression` | R | each disease against healthy, limma-voom, raw counts, batch as a model term | `differential_expression/` |
 | 6 | `06_…clusters_heatmaps` | R | heatmaps and sample groups (RGM) | `clusters/` |
 | 7 | `07_…JDM_comparison` | R | JDM against each RGM disease, each against its own lab's healthy controls | `jdm_comparison/` |
+| 8 | `08_SLE_GSE65391_vs_…` | R | SLE (public array GSE65391) against its own healthy children, then against every disease and JDM, with and without the interferon genes. Needs 001 to 003 first | `sle_comparison/` |
+| 9 | `09_WGCNA_RGM_and_JDM_modules` | R | gene modules (WGCNA), one network for RGM and one for the JDM lab, then module preservation both ways and module overlap | `wgcna/` |
 
 `01_NanoString…` and `001` to `006` (the public GSE65391 and GSE232381 sets) are independent of this chain; the public sets come back in when the SLE comparison is added.
 
@@ -101,14 +110,26 @@ Every file each notebook writes, and what it is for, is listed in **`OUTPUTS.md`
 | 06 | 42 | heatmaps of top genes, interferon genes, Ward trees |
 | 07 | 46, 46b | each disease against its own healthy controls |
 | **04b** | **48, 49** | Anne tried to remove the lab difference with control genes (RUVg) and concluded that no setting works, because each lab held one kind of sample. 04b therefore anchors on the healthy controls that the sources really share, and reuses her **positive and negative controls** (28 interferon genes up, 11 NF-κB genes unchanged) as pass or fail checks. |
-| not yet | 12 to 15c | WGCNA, see below |
-| not yet | 06c, 48 | SLE comparisons, see below |
+| 09 | 12 to 15, 25 to 26 | WGCNA per study and module preservation (the array modules are not projected yet) |
+| 08 | 06c, 48 | SLE against its own healthy children, then compared with the other diseases |
+
+## Results so far (what the data said)
+
+These are readings of the printed output, from notebooks that ran on Lifebit. They are not final conclusions.
+
+- **04b, all-sources correction.** Six sources were corrected (JDM-lab, NCI-FNL, NIAID-NCI, NIAMS-Batch1, NIAMS-Batch2, NIAMS-unlabelled; 218 samples, 11,145 genes). **BCM-HGSC was left out**: it has only 8 samples (2 each of AGS, CANDLE, HC, SAVI), too few to measure its shift. Source explained 0.98 of PC1+PC2 before correction and 0.10 after. The interferon check passed for all 5 diseases (5 PASS, 0 FAIL) and the shared-disease check passed (5 PASS, 0 CHECK). The one CHECK was the crude 6a rule (diagnosis share fell 0.41 to 0.32 against a threshold of 0.33); source fell as intended and the other two checks passed, so it was treated as a false alarm.
+- **07, JDM against each disease.** Rank correlation of fold changes: UAID 0.55, CANDLE 0.46, SAVI 0.35, AGS -0.32. Shared top genes all go in the same direction for CANDLE, SAVI and UAID. Interferon score (each against its own lab's healthy): JDM 0.76, against CANDLE 3.15, SAVI 3.13, UAID 2.49, AGS 1.60; healthy groups -0.15 and -0.33. Removing the 28 interferon genes removes about 26 genes from each shared list and leaves most of it (CANDLE 168 to 142, SAVI 154 to 129, UAID 130 to 104). The correlation barely moves because 28 genes are about 0.25% of the genes compared, so that column is a weak test.
+- **08, SLE.** SLE against healthy (157 children with SLE, 46 healthy, 13,261 genes, 5,335 with adjusted p < 0.05) matches Anne's run on the same data (157, 46, 13,259, 5,335). Rank correlation with SLE: SAVI 0.46, UAID 0.44, JDM 0.40, CANDLE 0.37, AGS -0.23. These four positive values are close together and should not be ranked. SLE interferon score 2.75 against -0.29 for its healthy children (24 of 28 genes measured).
+- **AGS.** `AGS_vs_HC` has 3 batches holding both groups (16 AGS, 62 healthy), so it is not a facility artefact. Its signal is weaker (88 genes up, 114 down at 2-fold) and it is negatively correlated with JDM and SLE. Unexplained; a cell-mix shift is one untested guess. Check: the `gene_name` column of `top_genes_AGS_vs_HC.csv`.
+- **Small groups.** `AGS-like` (2 to 3 samples) and `CANDLE-like` (3) appear as their own diagnoses. Notebook 08 skips them by default.
+
+**Cautions that apply to all of the above.** Array and RNA-seq are never on one scale; only fold changes against each study's own healthy controls are compared, by rank and direction. A resemblance shared by SLE, JDM, CANDLE, SAVI and UAID may be a general blood signal (interferon, neutrophils) and not specific to any one disease. The corrected table from 04b is for plots and clustering, never for statistical tests.
 
 ## Not built yet, and the plan
 
-**SLE comparisons.** Anne's lesson (notebooks 46, 48, 49) is that pooling SLE with the internal diseases and "correcting" the lab does not work when SLE sits in different labs from everything else. The plan is the same as for JDM: put SLE and each disease against **its own lab's healthy controls** (GSE65391 has 46 healthy children, GSE69529 has 43, GSE232381 has none), and compare the lists and the interferon scores, not pooled values.
+**WGCNA (notebook 09)** is written, not yet run. It needs the package, installed with `conda install -y -p /home/jovyan/envs/endotypes -c conda-forge r-wgcna` (done), and the R kernel restarted. It follows Anne's notebooks 13 to 15: signed network, power from the scale-free rule (FAQ value if none reaches R-squared 0.90), `minModuleSize` 30, `mergeCutHeight` 0.25, `maxBlockSize` 5000, count filter and PFlog1pPF for the RGM counts. One network per study (RGM from the notebook-04 ComBat-seq counts; the JDM lab from log2 RPKM), then module preservation in both directions and a gene-overlap table that says which RGM module matches which JDM module. Her array modules (GSE65391) are not projected into your data yet.
 
-**WGCNA.** Anne builds one network **per study**, then asks whether one study's modules exist in another (her 15 and 26 for preservation, 15b and 26b for projection). The plan is the same: one network on the RGM data (after notebook 04), one on the JDM-lab data, then preservation between them and projection of the GSE65391 modules. Her settings are signed network, power from the scale-free rule (FAQ value if no power reaches R² 0.90), `minModuleSize` 30, `mergeCutHeight` 0.25, `maxBlockSize` 5000, genes with fewer than 10 counts in more than 90% of samples removed, PFlog1pPF normalisation. The pooled table from 04b is for plots, not for building the network.
+**Optional side checks.** The broader interferon-gene test (remove the genes most correlated with the interferon score, then redo 07 and 08); the AGS gene-list check above; GSE69529 (43 healthy children) and GSE135779 (PBMC) as further SLE references.
 
 ## Folder layout
 
