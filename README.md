@@ -7,3 +7,8 @@ Setup, done once:
 
 ## CHECK!!!
 #### ls /home/jovyan/session_data/Attempt0/src/paths.R
+
+## when i change data on github repo do this so it pulls the most recent data but the thing is it resets the progress ughhh
+cd ~/session_data
+rm -rf endotype-transcripts-007
+git clone https://github.com/resurfatal/endotype-transcripts-007.git
