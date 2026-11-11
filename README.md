@@ -10,11 +10,69 @@ Tanisha's copy of the method in Anne Deslattes Mays' repository (NIH-NLM/endotyp
 - **Edited: `ipynb/07_NIH_bulk_RNA_seq_JDM_comparison.ipynb`.** Its old section 4 (the pooled ComBat view) moved into 04b. Nothing else in 07 changed.
 - **Everything else is byte-for-byte what you uploaded** (01 to 06, 001 to 006, `paths.R`, the six gene lists, the environment files). So 02, 03, 04, 05 and 06 do not need to be re-run if they already ran.
 
-**To run 04b you need:** notebooks 02, 03 and 04 finished (04b reads their files), the JDM files on `/mnt/file-systems/` (`4b_rpkm.csv`, `jdm-HC RNASEQ sample ID.csv`), and the `genes/` folder at `/home/jovyan/session_data/endotype-transcripts-007/genes` (the same place 06 and 07 already read it from). Kernel: R (WGCNA), the same one you used for 04.
+## Setup: the terminal commands, in order
 
-**Getting the two files onto Lifebit.** Upload `04b_...ipynb` and `07_...ipynb` next to your other notebooks. If you would rather re-clone the GitHub repo as in your old README, note that re-cloning replaces the notebooks in the cloned folder, so any outputs saved inside the notebooks are lost. The CSV results are written to `/home/jovyan/session_data/Attempt0/endotype_results/`, outside the repository, and are not touched.
+Run these in a Lifebit **terminal** (not a notebook cell). Steps 1 to 3 are done once per Lifebit session; the environment from step 2 stays in your home folder.
 
-## The order
+**1. Put the folder in place and copy `paths.R`.** The folder must be at exactly `/home/jovyan/session_data/endotype-transcripts-007` (notebooks 04b, 06, 07 read the gene lists from there).
+
+```bash
+cd ~/session_data
+ls endotype-transcripts-007            # should list: README.md ipynb src genes env
+mkdir -p /home/jovyan/session_data/Attempt0/src
+cp /home/jovyan/session_data/endotype-transcripts-007/src/paths.R /home/jovyan/session_data/Attempt0/src/
+ls /home/jovyan/session_data/Attempt0/src/paths.R    # must print the path, not an error
+```
+
+**2. Build the environment** (R with limma, edgeR, sva, plus Python for notebooks 02 and 03). Takes several minutes; leave the terminal open until it prints "Done".
+
+```bash
+bash /home/jovyan/session_data/endotype-transcripts-007/env/setup_endotypes_env.sh
+```
+
+Every package line near the end should say `OK`. The environment is created at `/home/jovyan/envs/endotypes`. Do not use `conda install -p /home/jovyan/envs/wgcna ...`: that environment does not exist in the current Lifebit session.
+
+**3. Check your input files are present.**
+
+```bash
+ls /mnt/file-systems | grep -i -E "Goldbach|HC_blood|MetadataPatients|4b_rpkm"
+```
+
+You need the Goldbach-Mansky workbook, `HC_blood_all_samples.xlsx`, `MetadataPatients_NoPHI.xlsx` and `4b_rpkm.csv`. (04b needs no JDM key sheet.)
+
+**4. In the browser:** refresh the tab, then open each notebook and choose Kernel > Change Kernel:
+
+| notebooks | kernel |
+|---|---|
+| 02, 03 | **Python (endotypes)** |
+| 04, 04b, 05, 06, 07 | **R (endotypes)** (the notebooks say "R (WGCNA)" in their text; ignore that) |
+
+Check R once, in a cell on the R kernel. All three must say `TRUE`:
+
+```r
+sapply(c("limma", "edgeR", "sva"), requireNamespace, quietly = TRUE)
+```
+
+**5. Run each notebook with Restart & Run All, in the order below.** Each reads the previous ones' files, so stop at the first error.
+
+**Handy checks while you work** (terminal):
+
+```bash
+# what has been written so far
+ls /home/jovyan/session_data/Attempt0/endotype_results/rnaseq_out_v2/
+# did 04b finish? (should list 9 files)
+ls /home/jovyan/session_data/Attempt0/endotype_results/rnaseq_out_v2/all_sources_correction/
+# which kernels exist
+jupyter kernelspec list
+```
+
+If something fails, copy the red error message and the cell it came from. For install problems, copy the last 30 lines of the terminal.
+
+**Known harmless messages:** ComBat's "Found N batches / Standardizing Data" lines in 04b; and in 03 the Checkpoint 10 histogram error is already fixed in this folder's copy.
+
+Every file each notebook writes, and what it is for, is listed in **`OUTPUTS.md`**.
+
+## Run order
 
 | step | notebook | language | what it does | writes (in `endotype_results/rnaseq_out_v2/`) |
 |---|---|---|---|---|
