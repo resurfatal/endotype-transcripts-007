@@ -1,0 +1,26 @@
+# One conda env for ALL notebooks 001-007 (R + Python in the same place).
+# Everything comes from conda-forge / bioconda as PRECOMPILED binaries,
+# which is why GEOquery installs here without the XVector compile error.
+name: endotypes
+channels:
+  - conda-forge
+  - bioconda
+  - nodefaults
+dependencies:
+  - python=3.11
+  - ipykernel
+  - pandas
+  - numpy
+  - matplotlib
+  - openpyxl
+  - r-base=4.4
+  - r-irkernel
+  - r-biocmanager
+  - r-data.table
+  - r-readxl
+  - bioconductor-biobase
+  - bioconductor-geoquery
+  - bioconductor-limma
+  - bioconductor-edger
+  - bioconductor-sva
+  - bioconductor-illuminahumanv4.db
