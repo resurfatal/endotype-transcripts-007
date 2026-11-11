@@ -136,10 +136,25 @@ Goal: find groups of genes that move together (modules) in your RNA-seq data and
 | ★ `<study>/ifn_module.csv` | The module holding most of the 28 interferon genes, how many are in it, and how many of the 11 NF-kB control genes fell into it. | The control: NF-kB genes should not be in the interferon module. |
 | ★ `preservation_RGM_modules_in_JDM.csv`, `preservation_JDM_modules_in_RGM.csv` | For each module of one study: do its genes also hang together in the other? `mean_cor`, `prop_var_PC1`, their Z scores, and a `reading` (`none`, `weak to moderate`, `strong`). | A `strong` module is reproduced across labs. |
 | ★ `module_overlap_RGM_JDM.csv` | Which RGM module matches which JDM module: genes shared, hypergeometric `adj_p`, and `involves_ifn_module`. | Colour names differ between studies; this is the translation table. |
+| ★ `module_verdicts_RGM.csv`, `module_verdicts_JDM.csv` | One line per module for each study, combining everything above into a plain-English `verdict` (interferon module / likely technical / reproduced / partly reproduced / not reproduced / cannot be tested, plus any clear or modest disease link), with `best_match` (the module of the other study sharing the most genes). | **The summary to read.** A reading aid, not a test. |
 | `PROCESSING_LOG_wgcna.md` | Text log of settings and the tables above. | A record to keep. |
+
+---
+
+## 10 · `10_SLE_GSE135779_vs_JDM_and_interferonopathies` (R)
+
+Goal: the second SLE study (public single-cell data from PBMC, summed per child) against its own healthy children, then compared with every disease, JDM and the first SLE study. Needs the supplement downloaded by hand, and 05, 07 and 08 done. Files go to `OUT/sle2_comparison/`; the pseudobulk counts and metadata are also saved once in `data/run_artifacts/GSE135779/` so later runs skip the download.
+
+| file | what it is | use it for |
+|---|---|---|
+| `de_SLE_vs_healthy_GSE135779.csv` | SLE (33 children) against 11 healthy children, every gene, with the study's batch in the model (`logFC`, `adj.P.Val`, `gene_name`...). | The second SLE study's own result. |
+| ★ `comparison_sle2_vs_others.csv` | One row per disease, JDM and the first SLE study (`SLE_GSE65391`): `rho_all_genes`, `rho_without_ifn`, shared top genes, `reading`. | The `SLE_GSE65391` row tells you whether the SLE signal replicates between two studies. |
+| `compare_SLE2_vs_<name>.csv` | Gene by gene: `logFC_sle2`, `adj.P.Val_sle2`, `logFC_other`, `adj.P.Val_other`, `ifn_gene`. | The detail behind the summary and scatter plots. |
+| ★ `ifn_score_sle2.csv` | Median interferon score of SLE and of this study's healthy children. | SLE should sit above healthy. |
+| `PROCESSING_LOG_sle2.md` | Text log of settings and the tables. | A record to keep. |
 
 ---
 
 ## The order in one line
 
-02 → 03 → 04 → **04b** → 05 → 06 → 07 → 08 → 09. Each notebook reads the previous ones' files, so if one fails, nothing after it can run.
+02 → 03 → 04 → **04b** → 05 → 06 → 07 → 08 → 09 → 10. Each notebook reads the previous ones' files, so if one fails, nothing after it can run.
