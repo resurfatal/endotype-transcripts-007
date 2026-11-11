@@ -12,3 +12,6 @@ Setup, done once:
 cd ~/session_data
 rm -rf endotype-transcripts-007
 git clone https://github.com/resurfatal/endotype-transcripts-007.git
+# conda install -p /home/jovyan/envs/wgcna -c conda-forge -c bioconda bioconductor-geoquery bioconductor-biobase bioconductor-limma bioconductor-illuminahumanv4.db r-data.table r-readxl
+
+basically switch to wgcna kernel within R
